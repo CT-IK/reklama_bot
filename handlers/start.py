@@ -17,7 +17,7 @@ async def start_handler(message:types.Message):
 
     user_id = message.from_user.id
     # user = await get_or_create_user(session, user_id)
-    async with get_session() as session:
+    async for session in get_session():
         user = await get_or_create_user(session, user_id)
         if user:
             await message.answer(reply_markup=keyboard, text="Ваш Telegram ID записан в базу данных! Чтобы увидеть FAQ, откройте мини-приложение: ")
