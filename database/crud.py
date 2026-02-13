@@ -11,6 +11,7 @@ async def get_or_create_user(session, telegram_id: int):
     if not user:
         new_user = User(telegram_id=telegram_id)
         session.add(new_user)
+        await session.flush()
         await session.commit()
         await session.refresh(new_user)  # Обновляем объект
         return new_user
