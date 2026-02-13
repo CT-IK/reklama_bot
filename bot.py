@@ -7,7 +7,8 @@ from database.engine import create_db
 from handlers.start import start_router
 from handlers.user_id import command_router
 from handlers.broadcast import brdcst_router
-# from handlers.db_size import db_router
+import database.models
+
 
 logging.basicConfig(level=logging.INFO)
 

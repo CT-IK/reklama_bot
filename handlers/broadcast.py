@@ -2,29 +2,23 @@ import asyncio
 from aiogram.fsm.state import State
 from aiogram import F, Router, Bot, Dispatcher, types
 from aiogram.filters import Command, StateFilter
-from aiogram.types import Message, User
+from aiogram.types import Message
+from database.models import User
+
 from aiogram.fsm.state import StatesGroup
 from aiogram.fsm.context import FSMContext
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from database.engine import get_session
 from config import BOT_TOKEN
+from database.crud import get_all_users
 
 
 brdcst_router = Router()
-bot = Bot(token=BOT_TOKEN)
-dp = Dispatcher()
-admins_list = ['2131378607', '1426715924']
-# admins_list = ['1426715924']
+admins_list = ['2131378607', '1426715924', '922109605']
 
 
-async def get_all_users(session):
-    stmt = select(User.telegram_id)
-    result = await session.execute(stmt)
-    users = [row[0] for row in result.fetchall()]
-    return users
-
-class Message_maker(StatesGroup):
+class Message_maker(StatesGroup): # MessageMaker
     content = State()
     ready_to_send = State()
 
@@ -68,15 +62,17 @@ async def image_settings(message:types.Message, state:FSMContext):
 #     await state.update_data(image=message.photo[-1].file_id)
 #     await message.answer("Сообщение создано!")
 #     data = await state.get_data()
-#     await message.answer(str(data))
+#     await message.answer(photo=img_var, caption=str(data))
 #     await state.set_state("ready_to_send")
+
+# caption 
     
 # @start_router.message(Message_maker.image)
 # async def add_image_etc(message:types.Message, state:FSMContext):
 #     await message.answer("Вы ввели данные неверно, введите сообщение для рассылки!")
 
 @brdcst_router.message(Message_maker.ready_to_send, F.text)
-async def broadcast_cmd(message:types.Message, state:FSMContext):
+async def broadcast_cmd(message: types.Message, state:FSMContext):
     await state.update_data(ready_to_send=message.text)
     user_id = message.from_user.id
     data = await state.get_data()
@@ -93,7 +89,7 @@ async def broadcast_cmd(message:types.Message, state:FSMContext):
 
         for user_id in users:
             try:
-                await bot.send_message(chat_id=user_id, text=message_for_users)
+                await message.bot.send_message(chat_id=user_id, text=message_for_users)
                 sent_count += 1
             except Exception as e:
                 await message.reply(f"Ошибка у {user_id} : {e}")

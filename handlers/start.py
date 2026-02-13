@@ -16,7 +16,6 @@ async def start_handler(message:types.Message):
     keyboard = InlineKeyboardMarkup(inline_keyboard=[[button]])
 
     user_id = message.from_user.id
-    # user = await get_or_create_user(session, user_id)
     async for session in get_session():
         user = await get_or_create_user(session, user_id)
         if user:
